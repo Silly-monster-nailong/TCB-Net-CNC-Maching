@@ -133,7 +133,7 @@ python scripts/ablation_channel_center.py
 对比四种初始化策略，结果保存在 `./ablation/channel_center_results.csv`。
 
 ### 5. 与基线模型对比
-首先确保你已经训练或获得了以下基线的结果（保存在 `../baseline/` 或指定目录）：
+首先确保你已经训练或获得了以下基线的结果（保存在 `../baseline/` 或指定目录,项目提供的基线脚本文件需要你手动移到与克隆仓库同一级的目录下或者你也可以手动修改路径）：
 - PatchTST、ModernTCN、iTransformer、TimesNet、Random Forest、KNN
 
 然后执行：
