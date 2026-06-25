@@ -1,0 +1,106 @@
+# configs/duet_anomaly.yaml
+data:
+  base_path: "../CNC_Machining/data"
+  machine: "M01"
+  processes: ["OP00", "OP01", "OP02", "OP03", "OP04", "OP05", 
+              "OP06", "OP07", "OP08", "OP09", "OP10", "OP11",
+              "OP12", "OP13", "OP14"]
+  seq_len: 256
+  pred_len: 1
+  max_samples: 20000
+  sample_rate_hz: 2000
+  model_input_len: 256
+
+  # 采样参数
+  normal_freq: 2000    # 正常数据采样频率
+  normal_stride: 256   # 正常数据步长 (50%重叠)
+  abnormal_freq: 2000  # 异常数据采样频率
+  abnormal_stride: 256 # 异常数据步长 (50%重叠)
+
+  # 半监督设置
+  semi_supervised_ratio: 1.0  # 所有异常数据用于训练，0表示纯无监督
+  use_op_info: true  # 是否使用工序信息
+
+model:
+  # 架构参数
+  input_dim: 3
+  hidden_dim: 64
+  seq_len: 256
+  num_experts: 4
+  num_clusters: 4
+  expert_dim: 64
+  k_experts: 2
+  
+  # 时频域特征参数
+  type: "sa_fno_detector"  # 模型类型
+  use_frequency_features: true
+  use_sa_fno: true
+  n_fft: 128             # FFT窗口大小
+  hop_length: 64        # FFT步长
+  modes: 16             # 频域模式数
+  freq_feat_dim: 32  
+  
+  # 网络结构
+  encoder_layers: 2
+  decoder_layers: 2
+  dropout: 0.1
+  bidirectional: true
+ 
+training:
+  # 训练参数
+  loss_type: "bce"  # 二元交叉熵
+  visualize: true   # 添加可视化选项
+  batch_size: 32
+  learning_rate: 0.001
+  weight_decay: 0.001
+  epochs: 30
+  patience: 15
+  grad_clip: 1.0
+
+  # Focal Loss参数
+  focal_loss_alpha: 0.85 #正负比例权重
+  focal_loss_gamma: 2.5  #难易权重
+
+  # 小样本模式
+  small_sample_mode: true
+  augmentation_prob: 0.3
+  warmup_epochs: 5
+  
+anomaly:
+  score_weights:
+    # 时域特征权重
+    reconstruction: 0.4
+    expert_entropy: 0.5
+    channel_entropy: 0.3
+    attn_consistency: 0.2
+    expert_variation: 0.6
+    expert_sparsity: 0.4
+    
+    # 频域特征权重（使用时频模型时才生效）
+    freq_mean: 0.3
+    freq_std: 0.4
+    freq_range: 0.5
+    time_freq_inconsistency: 0.8  # 重要特征！
+  
+  # 阈值策略选项: "percentile", "std_multiple", "auto"
+  threshold_method: "percentile"
+  
+  # percentile方法参数
+  threshold_percentile: 75    # 从95降低到80（更宽松）
+  
+  # std_multiple方法参数  
+  std_multiple: 2.0          # 从3.0降低到2.0
+  
+  # 分析参数
+  top_k_anomalies: 10
+  feature_importance: true
+  
+  # 新增：动态阈值调整
+  dynamic_adjustment: true
+  min_threshold_ratio: 0.8   # 阈值不低于正常最高分的80%
+  max_threshold_ratio: 1.2   # 阈值不高于正常最高分的120%
+  
+logging:
+  log_dir: "./logs"
+  save_dir: "./results"
+  model_dir: "./models"

@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+
+# 数据文件目录（直接忽略整个目录）
+data/processed/
+ablation/
+ablations/
+appendix/
+results/
+cnc_analysis_all/
+dataset_analysis/
+
+# 模型文件
+*.pth
+*.pt
+*.ckpt
+
+# 数据文件
+*.npy
+*.npz
+*.h5
+*.pkl
+
+# 图片（可选，如果希望保留少量示例图可注释掉）
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 日志
+logs/
+*.log
+
+# 其他
+.DS_Store
+Thumbs.db

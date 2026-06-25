@@ -1,0 +1,65 @@
+# TCB-Net 配置文件 
+
+model:
+  use_time_clustering: true   
+  use_channel_clustering: false 
+  time_only: false 
+  type: tcb_net
+  channels: 3
+  sample_rate: 2000
+  window_len: 256
+  n_fft: 64
+  hop_length: 64
+  win_length: 64
+  freq_bins: 33                   # n_fft//2 + 1
+  
+  # 时间聚类参数
+  time_hidden_dim: 64
+  n_time_clusters: 4
+  use_drift_detector: false
+  drift_entropy_threshold: 0.8     # 漂移检测熵阈值
+  
+  # 通道聚类参数
+  n_channel_clusters: 4
+  
+  # 双聚类融合参数
+  bilinear_dim: 32
+  num_classes: 1
+  quality_threshold: 0.3           # 双类簇质量过滤阈值
+  quality_alpha: 0.4               # 一致性权重
+  quality_beta: 0.3                # 区分性权重
+  quality_gamma: 0.3               # 物理一致性权重
+
+training:
+  use_cluster_loss: true
+  batch_size: 256
+  epochs: 10                      # 增加轮数以适应交替优化
+  learning_rate: 0.0005
+  weight_decay: 1e-5
+  grad_clip: 1.0
+  patience: 15                     # 增加耐心值（交替优化收敛慢）
+  early_stop_metric: 'auc'   # 'auc' 或 'f1'
+
+  # 损失权重
+  lambda_cluster: 0.05
+
+  # 小样本设置
+  small_sample_mode: false
+  augmentation_prob: 0.3
+
+  # 损失函数设置
+  loss_type: focal
+  focal_alpha: 0.9
+  focal_gamma: 1.5
+
+logging:
+  model_dir: "./ablations/tcb_net_no_channel/models"
+  save_dir: "./ablations/tcb_net_no_channel/results"
+  
+  # 新增：可解释性输出
+  save_bicluster_quality: true       # 保存双类簇质量报告
+  save_attention_maps: true        # 保存注意力图
+  save_frequency_profile: true     # 保存频域注意力
+
+  # 日志打印频率（每N个batch打印一次）
+  print_freq: 50

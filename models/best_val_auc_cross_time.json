@@ -1,0 +1,5 @@
+{
+  "best_score": 0.962420595229193,
+  "best_epoch": 6,
+  "early_stop_metric": "auc"
+}
